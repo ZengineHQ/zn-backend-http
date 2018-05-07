@@ -10,7 +10,7 @@ var Q = require('q');
  *
  * @return {Array<Object>} An array of  plain objects containing the results.
  */
-module.exports.formatResponseData = function (response) {
+module.exports.formatResponse = function (response) {
     return response.getBody().data;
 };
 
