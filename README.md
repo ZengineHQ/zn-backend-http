@@ -5,7 +5,7 @@ Helper library for working with znHttp in Zengine backend Plugins.
 ## Installation
 
 ```bash
-npm install git+ssh://git@github.com/WizeHive/zn-backend-firebase --save
+npm install git+ssh://git@github.com/WizeHive/zn-backend-http --save
 ```
 
 ## Usage
