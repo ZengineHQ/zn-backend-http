@@ -49,7 +49,7 @@ module.exports.fetchBatched = function (path, filter) {
     var def = Q.defer();
 
     // Kick off the batched fetch process.
-    _fetch(path, options).then(function (response) {
+    _fetchBatched(path, options).then(function (response) {
         var promises = [];
 
         // We've gotta make more API calls if the total count is greater than the limit.
@@ -60,7 +60,7 @@ module.exports.fetchBatched = function (path, filter) {
                 // Clone object and set new page.
                 var newOptions = JSON.parse(JSON.stringify(options));
                 newOptions.params.page = i + 1;
-                promises.push(_fetch(newOptions));
+                promises.push(_fetchBatched(newOptions));
             }
         }
 
