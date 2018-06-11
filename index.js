@@ -55,7 +55,7 @@ module.exports.fetchBatched = function (path, filter) {
         // We've gotta make more API calls if the total count is greater than the limit.
         if (response.count > limit) {
             // Figure out how many additional calls we need to make.
-            var extraCalls = Math.ceil((value.count - limit) / limit);
+            var extraCalls = Math.ceil((response.count - limit) / limit);
             for (var i = 1; i <= extraCalls; ++i) {
                 // Clone object and set new page.
                 var newOptions = JSON.parse(JSON.stringify(options));
