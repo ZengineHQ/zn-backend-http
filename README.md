@@ -1,6 +1,6 @@
 # Backend HTTP
 
-Helper library for working with znHttp in Zengine backend Plugins.
+> Helper module for working with znHttp in Zengine backend Plugins.
 
 ## Installation
 
