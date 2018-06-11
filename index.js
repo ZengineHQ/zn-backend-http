@@ -100,6 +100,6 @@ function _fetchBatched(path, options) {
         return {
             count: body.totalCount,
             records: body.data
-        }
+        };
     });
 }
