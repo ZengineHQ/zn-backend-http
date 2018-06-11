@@ -4,7 +4,9 @@
   "description": "Helper library for working with znHttp in Zengine backend plugins.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "jshint --config .jshintrc index.js || true",
+    "release": "jshint --config .jshintrc index.js && npm run build && standard-version"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,9 @@
   "homepage": "https://github.com/ZengineHQ/zn-backend-http#readme",
   "dependencies": {
     "q": "^1.5.1"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.5",
+    "standard-version": "^4.4.0"
   }
 }
