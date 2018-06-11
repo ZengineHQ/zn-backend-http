@@ -1,6 +1,6 @@
 'use strict';
 
-var znHttp = require('../../lib/zn-http');
+var znHttp = require('../../../lib/zn-http');
 var Q = require('q');
 
 /**
