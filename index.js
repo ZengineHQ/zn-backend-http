@@ -99,7 +99,7 @@ function _fetchBatched(path, options) {
         var body = response.getBody();
         return {
             count: body.totalCount,
-            records: body.data
+            records: body.data || []
         };
     });
 }
