@@ -1,17 +1,17 @@
-# zn-backend-http
+# Backend HTTP
 
 Helper library for working with znHttp in Zengine backend Plugins.
 
 ## Installation
 
 ```bash
-npm install git+ssh://git@github.com/WizeHive/zn-backend-http --save
+npm i @zenginehq/backend-http --save
 ```
 
 ## Usage
 
 ```js
-var zbh = require('zn-backend-http');
+var zbh = require('@zenginehq/backend-http');
 
 // Response success and failure handlers.
 znHttp().get(path).then(zbh.formatResponse, zbh.errHandler);
