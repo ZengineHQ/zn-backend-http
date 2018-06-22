@@ -48,6 +48,43 @@ module.exports.getRecord = function (formId, recordId) {
 };
 
 /**
+ * Creates a new record.
+ *
+ * @param {number} formId
+ * @param {Object} data Record data.
+ *
+ * @return {Promise<Object>}
+ */
+module.exports.createRecord = function (formId, data) {
+	return znHttp().post('/forms/' + formId + '/records', data).then(module.exports.formatResponse);
+}
+
+/**
+ * Updates an existing record.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ * @param {Object} data Record data.
+ *
+ * @return {Promise<Object>}
+ */
+module.exports.updateRecord = function (formId, recordId, data) {
+	return znHttp().put('/forms/' + formId + '/records/' + recordId, data).then(module.exports.formatResponse);
+}
+
+/**
+ * Deletes a record.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ *
+ * @return {Promise<Object>}
+ */
+module.exports.deleteRecord = function (formId, recordId) {
+	return znHttp().del('/forms/' + formId + '/records/' + recordId).then(module.exports.formatResponse);
+}
+
+/**
  * Helper to fetch all available records.
  * Uses batching to fetch multiple pages of results if necessary.
  *
