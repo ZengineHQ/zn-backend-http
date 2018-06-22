@@ -11,7 +11,7 @@ var Q = require('q');
  * @return {Array<Object>} An array of  plain objects containing the results.
  */
 module.exports.formatResponse = function (response) {
-    return response.getBody().data;
+	return response.getBody().data;
 };
 
 /**
@@ -20,8 +20,8 @@ module.exports.formatResponse = function (response) {
  * @param {Response} err A Node Response object.
  */
 module.exports.errHandler = function (err) {
-    // @TODO whether to throw an actual error is tentative.
-    throw new Error(err.getBody());
+	// @TODO whether to throw an actual error is tentative.
+	throw new Error(err.getBody());
 };
 
 /**
@@ -34,56 +34,56 @@ module.exports.errHandler = function (err) {
  * @returns {Promise<Array<Object>>} A promise for an array of plain objects.
  */
 module.exports.fetchBatched = function (path, filter) {
-    var limit = 20;
-    var options = {
-        "params": {
-            "limit": limit,
-            "page": 1
-        }
-    };
+	var limit = 20;
+	var options = {
+		"params": {
+			"limit": limit,
+			"page": 1
+		}
+	};
 
-    if (filter) {
-        options.params.filter = JSON.stringify(filter);
-    }
+	if (filter) {
+		options.params.filter = JSON.stringify(filter);
+	}
 
-    var def = Q.defer();
+	var def = Q.defer();
 
-    // Kick off the batched fetch process.
-    _fetchBatched(path, options).then(function (response) {
-        var promises = [];
+	// Kick off the batched fetch process.
+	_fetchBatched(path, options).then(function (response) {
+		var promises = [];
 
-        // We've gotta make more API calls if the total count is greater than the limit.
-        if (response.count > limit) {
-            // Figure out how many additional calls we need to make.
-            var extraCalls = Math.ceil((response.count - limit) / limit);
-            for (var i = 1; i <= extraCalls; ++i) {
-                // Clone object and set new page.
-                var newOptions = JSON.parse(JSON.stringify(options));
-                newOptions.params.page = i + 1;
-                promises.push(_fetchBatched(newOptions));
-            }
-        }
+		// We've gotta make more API calls if the total count is greater than the limit.
+		if (response.count > limit) {
+			// Figure out how many additional calls we need to make.
+			var extraCalls = Math.ceil((response.count - limit) / limit);
+			for (var i = 1; i <= extraCalls; ++i) {
+				// Clone object and set new page.
+				var newOptions = JSON.parse(JSON.stringify(options));
+				newOptions.params.page = i + 1;
+				promises.push(_fetchBatched(newOptions));
+			}
+		}
 
-        return {
-            promises: promises,
-            records: response.records
-        };
-    }).then(function (result) {
-        // Finally, execute any additional promises we may need.
-        Q.all(result.promises).done(function(values) {
-            values.forEach(function (val) {
-                result.records.concat(val.records);
-            });
-            def.resolve(result.records);
-        }, function (err) {
-            err = err.getBody();
-            def.reject(err);
-        });
-    }).catch(function (err) {
-        def.reject(err);
-    });
+		return {
+			promises: promises,
+			records: response.records
+		};
+	}).then(function (result) {
+		// Finally, execute any additional promises we may need.
+		Q.all(result.promises).done(function (values) {
+			values.forEach(function (val) {
+				result.records.concat(val.records);
+			});
+			def.resolve(result.records);
+		}, function (err) {
+			err = err.getBody();
+			def.reject(err);
+		});
+	}).catch(function (err) {
+		def.reject(err);
+	});
 
-    return def.promise;
+	return def.promise;
 };
 
 /**
@@ -94,12 +94,12 @@ module.exports.fetchBatched = function (path, filter) {
  *
  * @return {Promise<Object>}
  */
-function _fetchBatched(path, options) {
-    return znHttp().get(path, options).then(function (response) {
-        var body = response.getBody();
-        return {
-            count: body.totalCount,
-            records: body.data || []
-        };
-    });
+function _fetchBatched (path, options) {
+	return znHttp().get(path, options).then(function (response) {
+		var body = response.getBody();
+		return {
+			count: body.totalCount,
+			records: body.data || []
+		};
+	});
 }
