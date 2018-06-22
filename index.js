@@ -85,6 +85,25 @@ module.exports.deleteRecord = function (formId, recordId) {
 }
 
 /**
+ * Convenience method to move a record to a given folder.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ * @param {number} folderId
+ *
+ * @return {Promise<Object>}
+ */
+module.exports.moveRecord = function (formId, recordId, folderId) {
+	var data = {
+		id: recordId,
+		folder: {
+			id: folderId
+		}
+	};
+	return module.exports.updateRecord(formId, recordId, data);
+}
+
+/**
  * Helper to fetch all available records.
  * Uses batching to fetch multiple pages of results if necessary.
  *
