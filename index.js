@@ -25,6 +25,16 @@ module.exports.errHandler = function (err) {
 };
 
 /**
+ * Loads an Activity by id.
+ *
+ * @param {number} id The activity id.
+ *
+ * @return {Promise<Array<Object>>}
+ */
+module.exports.getActivity = function (id) {
+	return znHttp().get('/activities/' + id).then(formatResponse);
+};
+/**
  * Helper to fetch all available records.
  * Uses batching to fetch multiple pages of results if necessary.
  *
