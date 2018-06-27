@@ -85,6 +85,17 @@ module.exports.deleteRecord = function (formId, recordId) {
 }
 
 /**
+ * Gets a form.
+ *
+ * @param {number} formId
+ *
+ * @return {Promise<Object>}
+ */
+module.exports.getForm = function (formId) {
+	return znHttp().get('/forms/' + formId).then(module.exports.formatResponse);
+}
+
+/**
  * Convenience method to move a record to a given folder.
  *
  * @param {number} formId
