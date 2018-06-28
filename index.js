@@ -57,7 +57,7 @@ module.exports.getRecord = function (formId, recordId) {
  */
 module.exports.createRecord = function (formId, data) {
 	return znHttp().post('/forms/' + formId + '/records', data).then(module.exports.formatResponse);
-}
+};
 
 /**
  * Updates an existing record.
@@ -70,7 +70,7 @@ module.exports.createRecord = function (formId, data) {
  */
 module.exports.updateRecord = function (formId, recordId, data) {
 	return znHttp().put('/forms/' + formId + '/records/' + recordId, data).then(module.exports.formatResponse);
-}
+};
 
 /**
  * Deletes a record.
@@ -82,7 +82,7 @@ module.exports.updateRecord = function (formId, recordId, data) {
  */
 module.exports.deleteRecord = function (formId, recordId) {
 	return znHttp().del('/forms/' + formId + '/records/' + recordId).then(module.exports.formatResponse);
-}
+};
 
 /**
  * Gets a form.
@@ -93,7 +93,7 @@ module.exports.deleteRecord = function (formId, recordId) {
  */
 module.exports.getForm = function (formId) {
 	return znHttp().get('/forms/' + formId).then(module.exports.formatResponse);
-}
+};
 
 /**
  * Convenience method to move a record to a given folder.
@@ -112,7 +112,7 @@ module.exports.moveRecord = function (formId, recordId, folderId) {
 		}
 	};
 	return module.exports.updateRecord(formId, recordId, data);
-}
+};
 
 /**
  * Helper to fetch all available records.
