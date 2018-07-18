@@ -60,3 +60,7 @@ $api.getActivity(activityId);
 // Loads a form by id.
 $api.getForm(formId);
 ```
+
+## API Docs
+
+[Full documentation](https://zenginehq.github.io/zn-backend-http)
