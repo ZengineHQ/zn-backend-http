@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var znHttp = require('../../../lib/zn-http');
+var Q = require('q');
+
+/**
+ * Helper to format API response data.
+ *
+ * @param {Response} response A Node Response object.
+ *
+ * @return {Array&lt;Object>} An array of  plain objects containing the results.
+ */
+module.exports.formatResponse = function (response) {
+	return response.getBody().data;
+};
+
+/**
+ * Helper to handle API errors.
+ *
+ * @param {Response} err A Node Response object.
+ */
+module.exports.errHandler = function (err) {
+	// @TODO whether to throw an actual error is tentative.
+	throw new Error(err.getBody());
+};
+
+/**
+ * Load an Activity by id.
+ *
+ * @param {number} id The activity id.
+ *
+ * @return {Promise&lt;Array&lt;Object>>}
+ */
+module.exports.getActivity = function (id) {
+	return znHttp().get('/activities/' + id).then(module.exports.formatResponse);
+};
+
+/**
+ * Load a record by id.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ *
+ * @return {Promise&lt;Object>}
+ */
+module.exports.getRecord = function (formId, recordId) {
+	return znHttp().get('/forms/' + formId + '/records/' + recordId).then(module.exports.formatResponse);
+};
+
+/**
+ * Creates a new record.
+ *
+ * @param {number} formId
+ * @param {Object} data Record data.
+ *
+ * @return {Promise&lt;Object>}
+ */
+module.exports.createRecord = function (formId, data) {
+	return znHttp().post('/forms/' + formId + '/records', data).then(module.exports.formatResponse);
+};
+
+/**
+ * Updates an existing record.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ * @param {Object} data Record data.
+ *
+ * @return {Promise&lt;Object>}
+ */
+module.exports.updateRecord = function (formId, recordId, data) {
+	return znHttp().put('/forms/' + formId + '/records/' + recordId, data).then(module.exports.formatResponse);
+};
+
+/**
+ * Deletes a record.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ *
+ * @return {Promise&lt;Object>}
+ */
+module.exports.deleteRecord = function (formId, recordId) {
+	return znHttp().del('/forms/' + formId + '/records/' + recordId).then(module.exports.formatResponse);
+};
+
+/**
+ * Gets a form.
+ *
+ * @param {number} formId
+ *
+ * @return {Promise&lt;Object>}
+ */
+module.exports.getForm = function (formId) {
+	return znHttp().get('/forms/' + formId).then(module.exports.formatResponse);
+};
+
+/**
+ * Convenience method to move a record to a given folder.
+ *
+ * @param {number} formId
+ * @param {number} recordId
+ * @param {number} folderId
+ *
+ * @return {Promise&lt;Object>}
+ */
+module.exports.moveRecord = function (formId, recordId, folderId) {
+	var data = {
+		id: recordId,
+		folder: {
+			id: folderId
+		}
+	};
+	return module.exports.updateRecord(formId, recordId, data);
+};
+
+/**
+ * Helper to fetch all available records.
+ * Uses batching to fetch multiple pages of results if necessary.
+ *
+ * @param {string} path
+ * @param {Object} filter Optional, a filter object to apply.
+ *
+ * @returns {Promise&lt;Array&lt;Object>>} A promise for an array of plain objects.
+ */
+module.exports.fetchBatched = function (path, filter) {
+	var limit = 20;
+	var options = {
+		"params": {
+			"limit": limit,
+			"page": 1
+		}
+	};
+
+	if (filter) {
+		options.params.filter = JSON.stringify(filter);
+	}
+
+	var def = Q.defer();
+
+	// Kick off the batched fetch process.
+	_fetchBatched(path, options).then(function (response) {
+		var promises = [];
+
+		// We've gotta make more API calls if the total count is greater than the limit.
+		if (response.count > limit) {
+			// Figure out how many additional calls we need to make.
+			var extraCalls = Math.ceil((response.count - limit) / limit);
+			for (var i = 1; i &lt;= extraCalls; ++i) {
+				// Clone object and set new page.
+				var newOptions = JSON.parse(JSON.stringify(options));
+				newOptions.params.page = i + 1;
+				promises.push(_fetchBatched(newOptions));
+			}
+		}
+
+		return {
+			promises: promises,
+			records: response.records
+		};
+	}).then(function (result) {
+		// Finally, execute any additional promises we may need.
+		Q.all(result.promises).done(function (values) {
+			values.forEach(function (val) {
+				result.records.concat(val.records);
+			});
+			def.resolve(result.records);
+		}, function (err) {
+			err = err.getBody();
+			def.reject(err);
+		});
+	}).catch(function (err) {
+		def.reject(err);
+	});
+
+	return def.promise;
+};
+
+/**
+ * Internal helper to fetch a batch of results.
+ *
+ * @param {string} path
+ * @param {Object} options
+ *
+ * @return {Promise&lt;Object>}
+ */
+function _fetchBatched (path, options) {
+	return znHttp().get(path, options).then(function (response) {
+		var body = response.getBody();
+		return {
+			count: body.totalCount,
+			records: body.data || []
+		};
+	});
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#_fetchBatched">_fetchBatched</a></li><li><a href="global.html#createRecord">createRecord</a></li><li><a href="global.html#deleteRecord">deleteRecord</a></li><li><a href="global.html#errHandler">errHandler</a></li><li><a href="global.html#fetchBatched">fetchBatched</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getActivity">getActivity</a></li><li><a href="global.html#getForm">getForm</a></li><li><a href="global.html#getRecord">getRecord</a></li><li><a href="global.html#moveRecord">moveRecord</a></li><li><a href="global.html#updateRecord">updateRecord</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 10:34:42 GMT-0300 (-03)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
