@@ -183,6 +183,8 @@ module.exports.fetchBatched = function (path, filter) {
  * @param {Object} options
  *
  * @return {Promise<Object>}
+ *
+ * @private
  */
 function _fetchBatched (path, options) {
 	return znHttp().get(path, options).then(function (response) {
