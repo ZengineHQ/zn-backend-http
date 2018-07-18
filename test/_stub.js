@@ -1,22 +1,20 @@
 'use strict';
 
-const snapshot = {
-	val () {
-		return 'data from firebase';
+const response = {
+	getBody () {
+		return {
+			totalCount: 1,
+			data: 'record'
+		};
 	}
 };
 
 module.exports = function () {
 	const obj = {
-		child: (path) => {
-			obj.path = path;
-			return obj;
-		},
-		once: (s, cb, err) => {
-			return !obj.path ? err() : cb(snapshot)
-		},
-		update: (d, cb) => cb(!d),
-		path: ''
+		get: (path, options) => Promise.resolve(response),
+		post: (path, data) => Promise.resolve(response),
+		put: (path, data) => Promise.resolve(response),
+		del: (path, data) => Promise.resolve(response),
 	};
 
 	return obj;
