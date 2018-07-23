@@ -1,11 +1,14 @@
 'use strict';
 
 const mockery = require('mockery');
+
+const ZH_HTTP_PATH = '../../../lib/zn-http';
 let $api;
 
-describe('module', function () {
+describe('api helpers', function () {
 
 	before(function () {
+		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_simpleStub');
 		mockery.enable();
 		$api = require('../index');
 	});
@@ -57,6 +60,20 @@ describe('module', function () {
 
 	it('moves records', function () {
 		return $api.moveRecord(123, 567, 890).should.be.fulfilled;
+	});
+});
+
+describe('batched helper', function () {
+
+	before(function () {
+		mockery.deregisterSubstitute(ZH_HTTP_PATH);
+		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_complexStub');
+		mockery.enable();
+		$api = require('../index');
+	});
+
+	after(function () {
+		mockery.disable();
 	});
 
 	it('fetches batched records', function () {
