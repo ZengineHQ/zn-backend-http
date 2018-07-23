@@ -1,17 +1,18 @@
 'use strict';
 
+let counter = 1;
+const totalCount = 62;
+
 const response = {
 	getBody () {
 		const data = [];
+		const target = counter + 20;
 
-		for (let i = 1; i <= 62; ++i) {
-			data.push(i);
+		for (; (counter < target && counter <= totalCount); ++counter) {
+			data.push(counter);
 		}
 
-		return {
-			totalCount: data.length,
-			data
-		};
+		return { totalCount, data };
 	}
 };
 
