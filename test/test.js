@@ -68,7 +68,7 @@ describe('batched helper', function () {
 	before(function () {
 		mockery.deregisterSubstitute(ZH_HTTP_PATH);
 		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_complexStub');
-		mockery.enable();
+		mockery.enable({ useCleanCache: true });
 		$api = require('../index');
 	});
 
@@ -77,6 +77,8 @@ describe('batched helper', function () {
 	});
 
 	it('fetches batched records', function () {
-		
+		return $api.fetchBatched('foo', { filter: true }).then(function (response) {
+			expect(response.length).to.equal(62);
+		});
 	});
 });
