@@ -166,6 +166,7 @@ module.exports.fetchBatched = function (path, filter) {
 			});
 			def.resolve(result.records);
 		}, function (err) {
+			/* istanbul ignore next */
 			def.reject(err.getBody());
 		});
 	}).catch(function (err) {
