@@ -166,11 +166,10 @@ module.exports.fetchBatched = function (path, filter) {
 			});
 			def.resolve(result.records);
 		}, function (err) {
-			err = err.getBody();
-			def.reject(err);
+			def.reject(err.getBody());
 		});
 	}).catch(function (err) {
-		def.reject(err);
+		def.reject(err.getBody());
 	});
 
 	return def.promise;
