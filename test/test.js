@@ -82,3 +82,21 @@ describe('batched helper', function () {
 		});
 	});
 });
+
+describe('batched helper error handler', function () {
+
+	before(function () {
+		mockery.deregisterSubstitute(ZH_HTTP_PATH);
+		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_errorStub');
+		mockery.enable({ useCleanCache: true });
+		$api = require('../index');
+	});
+
+	after(function () {
+		mockery.disable();
+	});
+
+	it('throws errors when something goes wrong', function () {
+		return $api.fetchBatched('foo').should.be.rejected;
+	});
+});
