@@ -162,7 +162,7 @@ module.exports.fetchBatched = function (path, filter) {
 		// Finally, execute any additional promises we may need.
 		Q.all(result.promises).done(function (values) {
 			values.forEach(function (val) {
-				result.records.concat(val.records);
+				result.records = result.records.concat(val.records);
 			});
 			def.resolve(result.records);
 		}, function (err) {
