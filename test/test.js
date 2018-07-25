@@ -2,18 +2,19 @@
 
 const mockery = require('mockery');
 
-const ZH_HTTP_PATH = '../../../lib/zn-http';
+const ZN_HTTP_PATH = '../../../lib/zn-http';
 let $api;
 
 describe('api helpers', function () {
 
 	before(function () {
-		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_simpleStub');
-		mockery.enable();
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_simpleStub');
+		mockery.enable({ useCleanCache: true });
 		$api = require('../index');
 	});
 
 	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
 		mockery.disable();
 	});
 
@@ -64,21 +65,39 @@ describe('api helpers', function () {
 });
 
 describe('batched helper', function () {
-
 	before(function () {
-		mockery.deregisterSubstitute(ZH_HTTP_PATH);
-		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_complexStub');
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubMany');
 		mockery.enable({ useCleanCache: true });
 		$api = require('../index');
 	});
 
 	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
 		mockery.disable();
 	});
 
-	it('fetches batched records', function () {
+	it('fetches batched records when there are many', function () {
 		return $api.fetchBatched('foo', { filter: true }).then(function (response) {
 			expect(response.length).to.equal(62);
+		});
+	});
+});
+
+describe('batched helper continued', function () {
+	before(function () {
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubFew');
+		mockery.enable({ useCleanCache: true });
+		$api = require('../index');
+	});
+
+	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
+		mockery.disable();
+	});
+
+	it('fetches batched records when there are few', function () {
+		return $api.fetchBatched('foo').then(function (response) {
+			expect(response.length).to.equal(19);
 		});
 	});
 });
@@ -86,13 +105,13 @@ describe('batched helper', function () {
 describe('batched helper error handler', function () {
 
 	before(function () {
-		mockery.deregisterSubstitute(ZH_HTTP_PATH);
-		mockery.registerSubstitute(ZH_HTTP_PATH, './test/_errorStub');
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_errorStub');
 		mockery.enable({ useCleanCache: true });
 		$api = require('../index');
 	});
 
 	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
 		mockery.disable();
 	});
 
