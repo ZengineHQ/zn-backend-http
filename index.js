@@ -189,6 +189,7 @@ module.exports.fetchBatched = function (path, filter) {
 function _fetchBatched (path, options) {
 	return znHttp().get(path, options).then(function (response) {
 		var body = response.getBody();
+		/* istanbul ignore next LCOV_EXCL_LINE */
 		return {
 			count: body.totalCount,
 			records: body.data || []
