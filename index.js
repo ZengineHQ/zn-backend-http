@@ -166,7 +166,7 @@ module.exports.fetchBatched = function (path, filter) {
 			});
 			def.resolve(result.records);
 		}, function (err) {
-			/* istanbul ignore next */
+			/* istanbul ignore next LCOV_EXCL_LINE */
 			def.reject(err.getBody());
 		});
 	}).catch(function (err) {
