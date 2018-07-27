@@ -2,7 +2,7 @@
 
 > Helper module for working with znHttp in Zengine backend Plugins.
 
-[![Coverage Status](https://coveralls.io/repos/github/ZengineHQ/zn-backend-http/badge.svg?branch=master)](https://coveralls.io/github/ZengineHQ/zn-backend-http?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ZengineHQ/zn-backend-http/badge.svg?branch=master)](https://coveralls.io/github/ZengineHQ/zn-backend-http?branch=master)   [![Build Status](https://circleci.com/gh/ZengineHQ/zn-backend-http/tree/master.svg?style=shield)](https://circleci.com/gh/ZengineHQ/zn-backend-http/tree/master)
 
 ## Installation
 
