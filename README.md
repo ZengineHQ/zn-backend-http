@@ -54,7 +54,7 @@ $api.moveRecord(formId, recordId, folderId);
 ### Other convenience methods
 
 ```js
-// Loads an activity by id - useful for working with webhooks.
+// Loads an activity by id, useful for working with webhooks.
 $api.getActivity(activityId);
 
 // Loads a form by id.
