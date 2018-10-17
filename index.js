@@ -150,7 +150,7 @@ module.exports.fetchBatched = function (path, filter) {
 				// Clone object and set new page.
 				var newOptions = JSON.parse(JSON.stringify(options));
 				newOptions.params.page = i + 1;
-				promises.push(_fetchBatched(newOptions));
+				promises.push(_fetchBatched(path, newOptions));
 			}
 		}
 
