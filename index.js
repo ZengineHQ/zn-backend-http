@@ -175,24 +175,3 @@ module.exports.fetchBatchedPaginated = (path, params = {}) => {
 
 	return getPage();
 };
-
-/**
- * Internal helper to fetch a batch of results.
- *
- * @param {string} path
- * @param {Object} options
- *
- * @return {Promise<Object>}
- *
- * @private
- */
-function _fetchBatched (path, options) {
-	return znHttp().get(path, options).then(function (response) {
-		var body = response.getBody();
-		/* istanbul ignore next LCOV_EXCL_LINE */
-		return {
-			count: body.totalCount,
-			records: body.data || []
-		};
-	});
-}
