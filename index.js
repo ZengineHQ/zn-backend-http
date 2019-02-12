@@ -1,7 +1,6 @@
 'use strict';
 
 var znHttp = require('../../../lib/zn-http');
-var Q = require('q');
 
 /**
  * Helper to format API response data.
@@ -136,10 +135,10 @@ module.exports.fetchBatched = (path, params = {}) => {
 				const limit = body.limit;
 				const total = body.totalCount;
 
-				Array.isArray(body.data) ? results.push(...body.data) : body.data && results.push(body.data);
+				Array.isArray(body.data) ? results.push(...body.data) : body.data && results.push(body.data); // jshint ignore:line
 
 				return total > page * limit ? getPage(page + 1, results, limit) : results;
-			})
+			});
 		}
 
 	return getPage();
@@ -167,10 +166,10 @@ module.exports.fetchBatchedPaginated = (path, params = {}) => {
 				const limit = body.limit;
 				const total = body.totalCount;
 
-				Array.isArray(body.data) ? pages.push(body.data) : body.data && pages.push([body.data]);
+				Array.isArray(body.data) ? pages.push(body.data) : body.data && pages.push([body.data]); // jshint ignore:line
 
-				return total > page * limit ? getPage(page + 1, pages, limit) : pages
-			})
+				return total > page * limit ? getPage(page + 1, pages, limit) : pages;
+			});
 		}
 
 	return getPage();
