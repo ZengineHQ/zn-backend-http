@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-npm i @zenginehq/backend-http --save
+npm i @zenginehq/backend-http
 ```
 
 ## Usage
@@ -18,32 +18,39 @@ npm i @zenginehq/backend-http --save
 ```js
 var $api = require('@zenginehq/backend-http');
 
-// Exmaple Response success and failure handlers.
-znHttp().get(path).then($api.formatResponse, $api.errHandler);
+// Example Response success and failure handlers.
+znHttp().get(path)
+  .then($api.formatResponse)
+  .then(data => {
+    // data will be the Zengine object(s) you requested without all the metadata distractions
+  })
+  .catch($api.errHandler);
 
-// Fetch *all* records across multiple pages if available, optional filter object accepted.
-$api.fetchBatched(path, filters).then(function (results) {
-   console.log(results.length);
-});
+// Fetch *all* records across multiple pages if available, with any special parameters included in the second arg.
+$api.fetchBatched(path, { limit: 100, 'not-field123': 'some value' })
+  .then(results => {
+    console.log(results.length);
+  });
 ```
 
 ### Record CRUD
 
 ```js
 // Load an existing record.
-$api.getRecord(formId, recordId).then(function (record) {
-	
+$api.getRecord(formId, recordId).then(record => {
+	// do something with `record`
 });
 
-// Update an existing record.
+// Update an existing record. data should be a single object
 $api.updateRecord(formId, recordId, data);
 
 // Delete an existing record.
 $api.deleteRecord(formId, recordId);
 
-// Create a new record.
-$api.createRecord(formId, recordId, data).then(function (record) {
-	
+// Create a new record. data can be an array of objects or a single object
+$api.createRecord(formId, data).then(recordId => {
+  // the record ID(s) from the successful create (or update) operation.
+  // Important: it will always be the ID(s), not the entire record(s)
 });
 
 // Move a record to a folder.
@@ -51,14 +58,17 @@ $api.moveRecord(formId, recordId, folderId);
 
 ```
 
+**Special Note**
+To update multiple records on the same form, use the `createRecord` method and include the IDs of each object to ensure they are updated, rather than having new records created.
+
 ### Other convenience methods
 
 ```js
 // Loads an activity by id, useful for working with webhooks.
-$api.getActivity(activityId);
+const activity = await $api.getActivity(activityId);
 
 // Loads a form by id.
-$api.getForm(formId);
+const form = await $api.getForm(formId);
 ```
 
 ## API Docs
