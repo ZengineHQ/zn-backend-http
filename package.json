@@ -24,9 +24,7 @@
     "url": "https://github.com/ZengineHQ/zn-backend-http/issues"
   },
   "homepage": "https://github.com/ZengineHQ/zn-backend-http#readme",
-  "dependencies": {
-    "q": "^1.5.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
