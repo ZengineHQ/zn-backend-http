@@ -5,7 +5,7 @@
 	"forin": true,
 	"freeze": true,
 	"futurehostile": true,
-	"esversion": 6,
+	"esversion": 9,
 	"globals": {
 		"before": true,
 		"sinon": true,
