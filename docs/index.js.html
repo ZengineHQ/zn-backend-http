@@ -28,8 +28,8 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var znHttp = require('../../../lib/zn-http');
-var Q = require('q');
+// var znHttp = require('../../../lib/zn-http');
+var znHttp = require('../zn-plugin-wsos-graduated-within-estimated-grade/backend/update/lib/zn-http');
 
 /**
  * Helper to format API response data.
@@ -143,86 +143,66 @@ module.exports.moveRecord = function (formId, recordId, folderId) {
 };
 
 /**
- * Helper to fetch all available records.
- * Uses batching to fetch multiple pages of results if necessary.
  *
- * @param {string} path
- * @param {Object} filter Optional, a filter object to apply.
+ * @param {string} path valid Zengine API url params (ex: '/forms/123/records')
+ * @param {object} params key/value pairs of query params (ex: { limit: 50, folder: 1234 })
  *
- * @returns {Promise&lt;Array&lt;Object>>} A promise for an array of plain objects.
+ * @returns {any[]} An array of Zengine objects
  */
-module.exports.fetchBatched = function (path, filter) {
-	var limit = 20;
-	var options = {
-		"params": {
-			"limit": limit,
-			"page": 1
-		}
-	};
+module.exports.fetchBatched = (path, params = {}) => {
+	/**
+	 * @param {number} page
+	 * @param {object[][]} results
+	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 *
+	 * @returns {Promise&lt;object[]>} recursively calls API and returns all relevant data
+	 */
+	function getPage (page = 1, results = [], limit = params.limit || 20) {
+		return znHttp().get(path, { params: { ...params, limit, page } })
+			.then(res => {
+				const body = res.getBody();
+				const limit = body.limit;
+				const total = body.totalCount;
 
-	if (filter) {
-		options.params.filter = JSON.stringify(filter);
+				Array.isArray(body.data) ? results.push(...body.data) : body.data &amp;&amp; results.push(body.data); // jshint ignore:line
+
+				return total > page * limit ? getPage(page + 1, results, limit) : results;
+			});
 	}
 
-	var def = Q.defer();
-
-	// Kick off the batched fetch process.
-	_fetchBatched(path, options).then(function (response) {
-		var promises = [];
-
-		// We've gotta make more API calls if the total count is greater than the limit.
-		if (response.count > limit) {
-			// Figure out how many additional calls we need to make.
-			var extraCalls = Math.ceil((response.count - limit) / limit);
-			for (var i = 1; i &lt;= extraCalls; ++i) {
-				// Clone object and set new page.
-				var newOptions = JSON.parse(JSON.stringify(options));
-				newOptions.params.page = i + 1;
-				promises.push(_fetchBatched(newOptions));
-			}
-		}
-
-		return {
-			promises: promises,
-			records: response.records
-		};
-	}).then(function (result) {
-		// Finally, execute any additional promises we may need.
-		Q.all(result.promises).done(function (values) {
-			values.forEach(function (val) {
-				result.records.concat(val.records);
-			});
-			def.resolve(result.records);
-		}, function (err) {
-			err = err.getBody();
-			def.reject(err);
-		});
-	}).catch(function (err) {
-		def.reject(err);
-	});
-
-	return def.promise;
+	return getPage();
 };
 
 /**
- * Internal helper to fetch a batch of results.
  *
- * @param {string} path
- * @param {Object} options
+ * @param {number} path
+ * @param {object} params
  *
- * @return {Promise&lt;Object>}
- *
- * @private
+ * @returns {number[][]} An array of arrays storing the IDs
  */
-function _fetchBatched (path, options) {
-	return znHttp().get(path, options).then(function (response) {
-		var body = response.getBody();
-		return {
-			count: body.totalCount,
-			records: body.data || []
-		};
-	});
-}
+module.exports.fetchBatchedPaginated = (path, params = {}) => {
+	/**
+	 * @param {number} page
+	 * @param {object[][]} pages
+	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 *
+	 * @returns {Promise&lt;object[][]>} recursively calls API and returns paginated data
+	 */
+	function getPage (page = 1, pages = [], limit = params.limit || 20) {
+		return znHttp().get(path, { params: { ...params, limit, page } })
+			.then(res => {
+				const body = res.getBody();
+				const limit = body.limit;
+				const total = body.totalCount;
+
+				Array.isArray(body.data) ? pages.push(body.data) : body.data &amp;&amp; pages.push([body.data]); // jshint ignore:line
+
+				return total > page * limit ? getPage(page + 1, pages, limit) : pages;
+			});
+	}
+
+	return getPage();
+};
 </code></pre>
         </article>
     </section>
@@ -233,13 +213,13 @@ function _fetchBatched (path, options) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createRecord">createRecord</a></li><li><a href="global.html#deleteRecord">deleteRecord</a></li><li><a href="global.html#errHandler">errHandler</a></li><li><a href="global.html#fetchBatched">fetchBatched</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getActivity">getActivity</a></li><li><a href="global.html#getForm">getForm</a></li><li><a href="global.html#getRecord">getRecord</a></li><li><a href="global.html#moveRecord">moveRecord</a></li><li><a href="global.html#updateRecord">updateRecord</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createRecord">createRecord</a></li><li><a href="global.html#deleteRecord">deleteRecord</a></li><li><a href="global.html#errHandler">errHandler</a></li><li><a href="global.html#fetchBatched">fetchBatched</a></li><li><a href="global.html#fetchBatchedPaginated">fetchBatchedPaginated</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getActivity">getActivity</a></li><li><a href="global.html#getForm">getForm</a></li><li><a href="global.html#getRecord">getRecord</a></li><li><a href="global.html#moveRecord">moveRecord</a></li><li><a href="global.html#updateRecord">updateRecord</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 10:57:55 GMT-0300 (-03)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Feb 12 2019 18:37:02 GMT-0500 (Eastern Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

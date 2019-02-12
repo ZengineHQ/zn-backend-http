@@ -591,17 +591,12 @@
     
 
     
-    <h4 class="name" id="fetchBatched"><span class="type-signature"></span>fetchBatched<span class="signature">(path, filter)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;Object>>}</span></h4>
+    <h4 class="name" id="fetchBatched"><span class="type-signature"></span>fetchBatched<span class="signature">(path, params)</span><span class="type-signature"> &rarr; {Array.&lt;any>}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    Helper to fetch all available records.
-Uses batching to fetch multiple pages of results if necessary.
-</div>
 
 
 
@@ -652,20 +647,20 @@ Uses batching to fetch multiple pages of results if necessary.
 
             
 
-            <td class="description last"></td>
+            <td class="description last">valid Zengine API url params (ex: '/forms/123/records')</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>filter</code></td>
+                <td class="name"><code>params</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">object</span>
 
 
             
@@ -675,7 +670,7 @@ Uses batching to fetch multiple pages of results if necessary.
 
             
 
-            <td class="description last">Optional, a filter object to apply.</td>
+            <td class="description last">key/value pairs of query params (ex: { limit: 50, folder: 1234 })</td>
         </tr>
 
     
@@ -716,7 +711,7 @@ Uses batching to fetch multiple pages of results if necessary.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line126">line 126</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line124">line 124</a>
     </li></ul></dd>
     
 
@@ -743,7 +738,7 @@ Uses batching to fetch multiple pages of results if necessary.
 
         
 <div class="param-desc">
-    A promise for an array of plain objects.
+    An array of Zengine objects
 </div>
 
 
@@ -754,7 +749,183 @@ Uses batching to fetch multiple pages of results if necessary.
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;Array.&lt;Object>></span>
+<span class="param-type">Array.&lt;any></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="fetchBatchedPaginated"><span class="type-signature"></span>fetchBatchedPaginated<span class="signature">(path, params)</span><span class="type-signature"> &rarr; {Array.&lt;Array.&lt;number>>}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line155">line 155</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    An array of arrays storing the IDs
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Array.&lt;number>></span>
 
 
     </dd>
@@ -1819,13 +1990,13 @@ Uses batching to fetch multiple pages of results if necessary.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createRecord">createRecord</a></li><li><a href="global.html#deleteRecord">deleteRecord</a></li><li><a href="global.html#errHandler">errHandler</a></li><li><a href="global.html#fetchBatched">fetchBatched</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getActivity">getActivity</a></li><li><a href="global.html#getForm">getForm</a></li><li><a href="global.html#getRecord">getRecord</a></li><li><a href="global.html#moveRecord">moveRecord</a></li><li><a href="global.html#updateRecord">updateRecord</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createRecord">createRecord</a></li><li><a href="global.html#deleteRecord">deleteRecord</a></li><li><a href="global.html#errHandler">errHandler</a></li><li><a href="global.html#fetchBatched">fetchBatched</a></li><li><a href="global.html#fetchBatchedPaginated">fetchBatchedPaginated</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getActivity">getActivity</a></li><li><a href="global.html#getForm">getForm</a></li><li><a href="global.html#getRecord">getRecord</a></li><li><a href="global.html#moveRecord">moveRecord</a></li><li><a href="global.html#updateRecord">updateRecord</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 10:57:55 GMT-0300 (-03)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Feb 12 2019 18:37:02 GMT-0500 (Eastern Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
