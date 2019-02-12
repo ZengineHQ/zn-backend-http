@@ -115,21 +115,34 @@ module.exports.moveRecord = function (formId, recordId, folderId) {
 };
 
 /**
- * Helper to fetch all available records.
- * Uses batching to fetch multiple pages of results if necessary.
  *
- * @param {string} path
- * @param {Object} filter Optional, a filter object to apply.
+ * @param {string} path valid Zengine API url params (ex: '/forms/123/records')
+ * @param {object} params key/value pairs of query params (ex: { limit: 50, folder: 1234 })
  *
- * @returns {Promise<Array<Object>>} A promise for an array of plain objects.
+ * @returns {any[]} An array of Zengine objects
  */
-module.exports.fetchBatched = function (path, filter) {
-	var limit = 20;
-	var options = {
-		"params": {
-			"limit": limit,
-			"page": 1
+module.exports.fetchBatched = (path, params = {}) => {
+	/**
+	 * @param {number} page
+	 * @param {object[][]} results
+	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 *
+	 * @returns {Promise<object[]>} recursively calls API and returns all relevant data
+	 */
+	function getPage (page = 1, results = [], limit = params.limit || 20) {
+		return znHttp().get(path, { params: { ...params, limit, page } })
+			.then(res => {
+				const body = res.getBody();
+				const limit = body.limit;
+				const total = body.totalCount;
+
+				Array.isArray(body.data) ? results.push(...body.data) : body.data && results.push(body.data);
+
+				return total > page * limit ? getPage(page + 1, results, limit) : results;
+			})
 		}
+
+	return getPage();
 	};
 
 	if (filter) {
