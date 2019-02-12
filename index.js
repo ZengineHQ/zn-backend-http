@@ -145,48 +145,35 @@ module.exports.fetchBatched = (path, params = {}) => {
 	return getPage();
 	};
 
-	if (filter) {
-		options.params.filter = JSON.stringify(filter);
-	}
+/**
+ *
+ * @param {number} path
+ * @param {object} params
+ *
+ * @returns {number[][]} An array of arrays storing the IDs
+ */
+module.exports.fetchBatchedPaginated = (path, params = {}) => {
+	/**
+	 * @param {number} page
+	 * @param {object[][]} pages
+	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 *
+	 * @returns {Promise<object[][]>} recursively calls API and returns paginated data
+	 */
+	function getPage (page = 1, pages = [], limit = params.limit || 20) {
+		return znHttp().get(path, { params: { ...params, limit, page } })
+			.then(res => {
+				const body = res.getBody();
+				const limit = body.limit;
+				const total = body.totalCount;
 
-	var def = Q.defer();
+				Array.isArray(body.data) ? pages.push(body.data) : body.data && pages.push([body.data]);
 
-	// Kick off the batched fetch process.
-	_fetchBatched(path, options).then(function (response) {
-		var promises = [];
-
-		// We've gotta make more API calls if the total count is greater than the limit.
-		if (response.count > limit) {
-			// Figure out how many additional calls we need to make.
-			var extraCalls = Math.ceil((response.count - limit) / limit);
-			for (var i = 1; i <= extraCalls; ++i) {
-				// Clone object and set new page.
-				var newOptions = JSON.parse(JSON.stringify(options));
-				newOptions.params.page = i + 1;
-				promises.push(_fetchBatched(path, newOptions));
-			}
+				return total > page * limit ? getPage(page + 1, pages, limit) : pages
+			})
 		}
 
-		return {
-			promises: promises,
-			records: response.records
-		};
-	}).then(function (result) {
-		// Finally, execute any additional promises we may need.
-		Q.all(result.promises).done(function (values) {
-			values.forEach(function (val) {
-				result.records = result.records.concat(val.records);
-			});
-			def.resolve(result.records);
-		}, function (err) {
-			/* istanbul ignore next LCOV_EXCL_LINE */
-			def.reject(err.getBody());
-		});
-	}).catch(function (err) {
-		def.reject(err.getBody());
-	});
-
-	return def.promise;
+	return getPage();
 };
 
 /**
