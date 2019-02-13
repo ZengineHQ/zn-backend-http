@@ -123,7 +123,7 @@ module.exports.moveRecord = function (formId, recordId, folderId) {
 module.exports.fetchBatched = (path, params = {}) => {
 	/**
 	 * @param {number} page
-	 * @param {object[][]} results
+	 * @param {object[]} results
 	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
 	 *
 	 * @returns {Promise<object[]>} recursively calls API and returns all relevant data
@@ -142,7 +142,7 @@ module.exports.fetchBatched = (path, params = {}) => {
 		}
 
 	return getPage();
-	};
+};
 
 /**
  *
