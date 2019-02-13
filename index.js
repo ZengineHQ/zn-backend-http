@@ -135,7 +135,7 @@ module.exports.fetchBatched = (path, params = {}) => {
 				const limit = body.limit;
 				const total = body.totalCount;
 
-				Array.isArray(body.data) ? results.push(...body.data) : body.data && results.push(body.data); // jshint ignore:line
+				body.data && results.push(...body.data); // jshint ignore:line
 
 				return total > page * limit ? getPage(page + 1, results, limit) : results;
 			});
@@ -166,7 +166,7 @@ module.exports.fetchBatchedPaginated = (path, params = {}) => {
 				const limit = body.limit;
 				const total = body.totalCount;
 
-				Array.isArray(body.data) ? pages.push(body.data) : body.data && pages.push([body.data]); // jshint ignore:line
+				body.data && pages.push(body.data);// jshint ignore:line
 
 				return total > page * limit ? getPage(page + 1, pages, limit) : pages;
 			});
