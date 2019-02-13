@@ -149,7 +149,7 @@ module.exports.fetchBatched = (path, params = {}) => {
  * @param {number} path
  * @param {object} params
  *
- * @returns {number[][]} An array of arrays storing the IDs
+ * @returns {object[][]} An array of arrays storing the Zengine resources
  */
 module.exports.fetchBatchedPaginated = (path, params = {}) => {
 	/**
