@@ -1,7 +1,6 @@
 'use strict';
 
 var znHttp = require('../../../lib/zn-http');
-var Q = require('q');
 
 /**
  * Helper to format API response data.
@@ -115,84 +114,63 @@ module.exports.moveRecord = function (formId, recordId, folderId) {
 };
 
 /**
- * Helper to fetch all available records.
- * Uses batching to fetch multiple pages of results if necessary.
  *
- * @param {string} path
- * @param {Object} filter Optional, a filter object to apply.
+ * @param {string} path valid Zengine API url params (ex: '/forms/123/records')
+ * @param {object} params key/value pairs of query params (ex: { limit: 50, folder: 1234 })
  *
- * @returns {Promise<Array<Object>>} A promise for an array of plain objects.
+ * @returns {any[]} An array of Zengine objects
  */
-module.exports.fetchBatched = function (path, filter) {
-	var limit = 20;
-	var options = {
-		"params": {
-			"limit": limit,
-			"page": 1
-		}
-	};
+module.exports.fetchBatched = (path, params = {}) => {
+	/**
+	 * @param {number} page
+	 * @param {object[]} results
+	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 *
+	 * @returns {Promise<object[]>} recursively calls API and returns all relevant data
+	 */
+	function getPage (page = 1, results = [], limit = params.limit || 20) {
+		return znHttp().get(path, { params: { ...params, limit, page } })
+			.then(res => {
+				const body = res.getBody();
+				const limit = body.limit;
+				const total = body.totalCount;
 
-	if (filter) {
-		options.params.filter = JSON.stringify(filter);
-	}
+				body.data && results.push(...body.data); // jshint ignore:line
 
-	var def = Q.defer();
-
-	// Kick off the batched fetch process.
-	_fetchBatched(path, options).then(function (response) {
-		var promises = [];
-
-		// We've gotta make more API calls if the total count is greater than the limit.
-		if (response.count > limit) {
-			// Figure out how many additional calls we need to make.
-			var extraCalls = Math.ceil((response.count - limit) / limit);
-			for (var i = 1; i <= extraCalls; ++i) {
-				// Clone object and set new page.
-				var newOptions = JSON.parse(JSON.stringify(options));
-				newOptions.params.page = i + 1;
-				promises.push(_fetchBatched(path, newOptions));
-			}
-		}
-
-		return {
-			promises: promises,
-			records: response.records
-		};
-	}).then(function (result) {
-		// Finally, execute any additional promises we may need.
-		Q.all(result.promises).done(function (values) {
-			values.forEach(function (val) {
-				result.records = result.records.concat(val.records);
+				return total > page * limit ? getPage(page + 1, results, limit) : results;
 			});
-			def.resolve(result.records);
-		}, function (err) {
-			/* istanbul ignore next LCOV_EXCL_LINE */
-			def.reject(err.getBody());
-		});
-	}).catch(function (err) {
-		def.reject(err.getBody());
-	});
+		}
 
-	return def.promise;
+	return getPage();
 };
 
 /**
- * Internal helper to fetch a batch of results.
  *
- * @param {string} path
- * @param {Object} options
+ * @param {number} path
+ * @param {object} params
  *
- * @return {Promise<Object>}
- *
- * @private
+ * @returns {object[][]} An array of arrays storing the Zengine resources
  */
-function _fetchBatched (path, options) {
-	return znHttp().get(path, options).then(function (response) {
-		var body = response.getBody();
-		/* istanbul ignore next LCOV_EXCL_LINE */
-		return {
-			count: body.totalCount,
-			records: body.data || []
-		};
-	});
-}
+module.exports.fetchBatchedPaginated = (path, params = {}) => {
+	/**
+	 * @param {number} page
+	 * @param {object[][]} pages
+	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 *
+	 * @returns {Promise<object[][]>} recursively calls API and returns paginated data
+	 */
+	function getPage (page = 1, pages = [], limit = params.limit || 20) {
+		return znHttp().get(path, { params: { ...params, limit, page } })
+			.then(res => {
+				const body = res.getBody();
+				const limit = body.limit;
+				const total = body.totalCount;
+
+				body.data && pages.push(body.data);// jshint ignore:line
+
+				return total > page * limit ? getPage(page + 1, pages, limit) : pages;
+			});
+		}
+
+	return getPage();
+};

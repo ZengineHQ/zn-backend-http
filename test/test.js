@@ -119,3 +119,61 @@ describe('batched helper error handler', function () {
 		return $api.fetchBatched('foo').should.be.rejected;
 	});
 });
+
+describe('batched paginated helper', function () {
+	before(function () {
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubMany');
+		mockery.enable({ useCleanCache: true });
+		$api = require('../index');
+	});
+
+	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
+		mockery.disable();
+	});
+
+	it('fetches batched records when there are many', function () {
+		return $api.fetchBatchedPaginated('foo', { filter: true }).then(function (response) {
+			expect(response.length).to.equal(4);
+			expect(response.reduce((all, some) => all.concat(some), []).length).to.equal(62);
+		});
+	});
+});
+
+describe('batched paginated helper continued', function () {
+	before(function () {
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubFew');
+		mockery.enable({ useCleanCache: true });
+		$api = require('../index');
+	});
+
+	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
+		mockery.disable();
+	});
+
+	it('fetches batched records when there are few', function () {
+		return $api.fetchBatchedPaginated('foo').then(function (response) {
+			expect(response.length).to.equal(1);
+			expect(response.reduce((all, some) => all.concat(some), []).length).to.equal(19);
+		});
+	});
+});
+
+describe('batched paginated helper error handler', function () {
+
+	before(function () {
+		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_errorStub');
+		mockery.enable({ useCleanCache: true });
+		$api = require('../index');
+	});
+
+	after(function () {
+		mockery.deregisterSubstitute(ZN_HTTP_PATH);
+		mockery.disable();
+	});
+
+	it('throws errors when something goes wrong', function () {
+		return $api.fetchBatchedPaginated('foo').should.be.rejected;
+	});
+});

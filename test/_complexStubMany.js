@@ -2,6 +2,7 @@
 
 let counter = 1;
 const totalCount = 62;
+const limit = 20;
 
 const response = {
 	getBody () {
@@ -12,7 +13,7 @@ const response = {
 			data.push(counter);
 		}
 
-		return { totalCount, data };
+		return { totalCount, data, limit };
 	}
 };
 
