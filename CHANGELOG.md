@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/ZengineHQ/zn-backend-http/compare/2.0.0...3.0.0) (2019-03-14)
+
+
+### Features
+
+* allow pass reference to znHttp ([be663d5](https://github.com/ZengineHQ/zn-backend-http/commit/be663d5))
+
+
+### BREAKING CHANGES
+
+* library returns a function instead of an object now.
+
+Before:
+Api = require('@zenginehq/backend-http');
+Api.moveRecord(formId, recordId, folderId);
+
+After:
+
+Api = require('@zenginehq/backend-http');
+znHttp = require('zn-http')();
+Api(znHttp).moveRecord(formId, recordId, folderId);
+
+- makes it work nicely with zengo
+- allows for easier unit testing, so znHttp can be stubbed
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/ZengineHQ/zn-backend-http/compare/v1.2.3...v2.0.0) (2019-02-14)
 
