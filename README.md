@@ -16,7 +16,7 @@ npm i @zenginehq/backend-http
 ### Bulk fetching records
 
 ```js
-var $api = require('@zenginehq/backend-http');
+var $api = require('@zenginehq/backend-http')();
 
 // Example Response success and failure handlers.
 znHttp().get(path)

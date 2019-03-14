@@ -28,180 +28,220 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var znHttp = require('../../../lib/zn-http');
+/** @class
+* @param {znHttp} znHttp A ZnHttp reference
+*/
+function BackendFactory(znHttp) {
 
-/**
- * Helper to format API response data.
- *
- * @param {Response} response A Node Response object.
- *
- * @return {Array&lt;Object>} An array of  plain objects containing the results.
- */
-module.exports.formatResponse = function (response) {
-	return response.getBody().data;
-};
+	if (!znHttp) {
+		znHttp = require('../../../lib/zn-http')();
+	}
 
-/**
- * Helper to handle API errors.
- *
- * @param {Response} err A Node Response object.
- */
-module.exports.errHandler = function (err) {
-	// @TODO whether to throw an actual error is tentative.
-	throw new Error(err.getBody());
-};
+	let self = {};
 
-/**
- * Load an Activity by id.
- *
- * @param {number} id The activity id.
- *
- * @return {Promise&lt;Array&lt;Object>>}
- */
-module.exports.getActivity = function (id) {
-	return znHttp().get('/activities/' + id).then(module.exports.formatResponse);
-};
-
-/**
- * Load a record by id.
- *
- * @param {number} formId
- * @param {number} recordId
- *
- * @return {Promise&lt;Object>}
- */
-module.exports.getRecord = function (formId, recordId) {
-	return znHttp().get('/forms/' + formId + '/records/' + recordId).then(module.exports.formatResponse);
-};
-
-/**
- * Creates a new record.
- *
- * @param {number} formId
- * @param {Object} data Record data.
- *
- * @return {Promise&lt;Object>}
- */
-module.exports.createRecord = function (formId, data) {
-	return znHttp().post('/forms/' + formId + '/records', data).then(module.exports.formatResponse);
-};
-
-/**
- * Updates an existing record.
- *
- * @param {number} formId
- * @param {number} recordId
- * @param {Object} data Record data.
- *
- * @return {Promise&lt;Object>}
- */
-module.exports.updateRecord = function (formId, recordId, data) {
-	return znHttp().put('/forms/' + formId + '/records/' + recordId, data).then(module.exports.formatResponse);
-};
-
-/**
- * Deletes a record.
- *
- * @param {number} formId
- * @param {number} recordId
- *
- * @return {Promise&lt;Object>}
- */
-module.exports.deleteRecord = function (formId, recordId) {
-	return znHttp().del('/forms/' + formId + '/records/' + recordId).then(module.exports.formatResponse);
-};
-
-/**
- * Gets a form.
- *
- * @param {number} formId
- *
- * @return {Promise&lt;Object>}
- */
-module.exports.getForm = function (formId) {
-	return znHttp().get('/forms/' + formId).then(module.exports.formatResponse);
-};
-
-/**
- * Convenience method to move a record to a given folder.
- *
- * @param {number} formId
- * @param {number} recordId
- * @param {number} folderId
- *
- * @return {Promise&lt;Object>}
- */
-module.exports.moveRecord = function (formId, recordId, folderId) {
-	var data = {
-		id: recordId,
-		folder: {
-			id: folderId
-		}
+	/**
+	 * @function formatResponse
+	 * @memberof BackendFactory
+	 * @description Helper to format API response data.
+	 *
+	 * @param {Response} response A Node Response object.
+	 *
+	 * @return {Array&lt;Object>} An array of  plain objects containing the results.
+	 */
+	self.formatResponse = response => {
+		return response.getBody().data;
 	};
-	return module.exports.updateRecord(formId, recordId, data);
-};
 
-/**
- *
- * @param {string} path valid Zengine API url params (ex: '/forms/123/records')
- * @param {object} params key/value pairs of query params (ex: { limit: 50, folder: 1234 })
- *
- * @returns {any[]} An array of Zengine objects
- */
-module.exports.fetchBatched = (path, params = {}) => {
 	/**
-	 * @param {number} page
-	 * @param {object[]} results
-	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 * @function errHandler
+	 * @memberof BackendFactory
+	 * @description Helper to handle API errors.
 	 *
-	 * @returns {Promise&lt;object[]>} recursively calls API and returns all relevant data
+	 * @param {Response} err A Node Response object.
 	 */
-	function getPage (page = 1, results = [], limit = params.limit || 20) {
-		return znHttp().get(path, { params: { ...params, limit, page } })
-			.then(res => {
-				const body = res.getBody();
-				const limit = body.limit;
-				const total = body.totalCount;
+	self.errHandler = err => {
+		// @TODO whether to throw an actual error is tentative.
+		throw new Error(err.getBody());
+	};
 
-				body.data &amp;&amp; results.push(...body.data); // jshint ignore:line
-
-				return total > page * limit ? getPage(page + 1, results, limit) : results;
-			});
-		}
-
-	return getPage();
-};
-
-/**
- *
- * @param {number} path
- * @param {object} params
- *
- * @returns {object[][]} An array of arrays storing the Zengine resources
- */
-module.exports.fetchBatchedPaginated = (path, params = {}) => {
 	/**
-	 * @param {number} page
-	 * @param {object[][]} pages
-	 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+	 * @function getActivity
+	 * @memberof BackendFactory
+	 * @description Load an Activity by id.
 	 *
-	 * @returns {Promise&lt;object[][]>} recursively calls API and returns paginated data
+	 * @param {number} id The activity id.
+	 *
+	 * @return {Promise&lt;Array&lt;Object>>}
 	 */
-	function getPage (page = 1, pages = [], limit = params.limit || 20) {
-		return znHttp().get(path, { params: { ...params, limit, page } })
-			.then(res => {
-				const body = res.getBody();
-				const limit = body.limit;
-				const total = body.totalCount;
+	self.getActivity = id => {
+		return znHttp.get('/activities/' + id).then(self.formatResponse);
+	};
 
-				body.data &amp;&amp; pages.push(body.data);// jshint ignore:line
+	/**
+	 * @function getRecord
+	 * @memberof BackendFactory
+	 * @description Load a record by id.
+	 *
+	 * @param {number} formId
+	 * @param {number} recordId
+	 *
+	 * @return {Promise&lt;Object>}
+	 */
+	self.getRecord = (formId, recordId) => {
+		return znHttp.get('/forms/' + formId + '/records/' + recordId).then(self.formatResponse);
+	};
 
-				return total > page * limit ? getPage(page + 1, pages, limit) : pages;
-			});
-		}
+	/**
+	 * @function createRecord
+	 * @memberof BackendFactory
+	 * @description Creates a new record.
+	 *
+	 * @param {number} formId
+	 * @param {Object} data Record data.
+	 *
+	 * @return {Promise&lt;Object>}
+	 */
+	self.createRecord = (formId, data) => {
+		return znHttp.post('/forms/' + formId + '/records', data).then(self.formatResponse);
+	};
 
-	return getPage();
-};
+	/**
+	 * @function updateRecord
+	 * @memberof BackendFactory
+	 * @description Updates an existing record.
+	 *
+	 * @param {number} formId
+	 * @param {number} recordId
+	 * @param {Object} data Record data.
+	 *
+	 * @return {Promise&lt;Object>}
+	 */
+	self.updateRecord = (formId, recordId, data) => {
+		return znHttp.put('/forms/' + formId + '/records/' + recordId, data).then(self.formatResponse);
+	};
+
+	/**
+	 * @function deleteRecord
+	 * @memberof BackendFactory
+	 * @description Deletes a record.
+	 *
+	 * @param {number} formId
+	 * @param {number} recordId
+	 *
+	 * @return {Promise&lt;Object>}
+	 */
+	self.deleteRecord = (formId, recordId) => {
+		return znHttp.del('/forms/' + formId + '/records/' + recordId).then(self.formatResponse);
+	};
+
+	/**
+	 * @function getForm
+	 * @memberof BackendFactory
+	 * @description Gets a form.
+	 *
+	 * @param {number} formId
+	 *
+	 * @return {Promise&lt;Object>}
+	 */
+	self.getForm = formId => {
+		return znHttp.get('/forms/' + formId).then(self.formatResponse);
+	};
+
+	/**
+	 * @function moveRecord
+	 * @memberof BackendFactory
+	 * @description Convenience method to move a record to a given folder.
+	 *
+	 * @param {number} formId
+	 * @param {number} recordId
+	 * @param {number} folderId
+	 *
+	 * @return {Promise&lt;Object>}
+	 */
+	self.moveRecord = (formId, recordId, folderId) => {
+		var data = {
+			id: recordId,
+			folder: {
+				id: folderId
+			}
+		};
+		return self.updateRecord(formId, recordId, data);
+	};
+
+	/**
+	 * @function fetchBatched
+	 * @memberof BackendFactory
+	 * @description fetch all for given resource
+	 *
+	 * @param {string} path valid Zengine API url params (ex: '/forms/123/records')
+	 * @param {object} params key/value pairs of query params (ex: { limit: 50, folder: 1234 })
+	 *
+	 * @returns {any[]} An array of Zengine objects
+	 */
+	self.fetchBatched = (path, params = {}) => {
+		/**
+		 * @param {number} page
+		 * @param {object[]} results
+		 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+		 *
+		 * @returns {Promise&lt;object[]>} recursively calls API and returns all relevant data
+		 */
+		function getPage (page = 1, results = [], limit = params.limit || 20) {
+			return znHttp.get(path, { params: { ...params, limit, page } })
+				.then(res => {
+					const body = res.getBody();
+					const limit = body.limit;
+					const total = body.totalCount;
+
+					body.data &amp;&amp; results.push(...body.data); // jshint ignore:line
+
+					return total > page * limit ? getPage(page + 1, results, limit) : results;
+				});
+			}
+
+		return getPage();
+	};
+
+	/**
+	 * @function fetchBatchedPaginated
+	 * @memberof BackendFactory
+	 * @description fetch all for a given resource, chunked by page
+	 *
+	 * @param {number} path
+	 * @param {object} params
+	 *
+	 * @returns {object[][]} An array of arrays storing the Zengine resources
+	 */
+	self.fetchBatchedPaginated = (path, params = {}) => {
+		/**
+		 * @param {number} page
+		 * @param {object[][]} pages
+		 * @param {number} limit this parameter is necessary to accurately maintain the limit across calls, in the event the API returns a different limit than the user defines in `params`
+		 *
+		 * @returns {Promise&lt;object[][]>} recursively calls API and returns paginated data
+		 */
+		function getPage (page = 1, pages = [], limit = params.limit || 20) {
+			return znHttp.get(path, { params: { ...params, limit, page } })
+				.then(res => {
+					const body = res.getBody();
+					const limit = body.limit;
+					const total = body.totalCount;
+
+					body.data &amp;&amp; pages.push(body.data);// jshint ignore:line
+
+					return total > page * limit ? getPage(page + 1, pages, limit) : pages;
+				});
+			}
+
+		return getPage();
+	};
+
+	return self;
+
+}
+
+module.exports = BackendFactory;
+
 </code></pre>
         </article>
     </section>
@@ -212,13 +252,13 @@ module.exports.fetchBatchedPaginated = (path, params = {}) => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createRecord">createRecord</a></li><li><a href="global.html#deleteRecord">deleteRecord</a></li><li><a href="global.html#errHandler">errHandler</a></li><li><a href="global.html#fetchBatched">fetchBatched</a></li><li><a href="global.html#fetchBatchedPaginated">fetchBatchedPaginated</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getActivity">getActivity</a></li><li><a href="global.html#getForm">getForm</a></li><li><a href="global.html#getRecord">getRecord</a></li><li><a href="global.html#moveRecord">moveRecord</a></li><li><a href="global.html#updateRecord">updateRecord</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackendFactory.html">BackendFactory</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Feb 14 2019 12:30:40 GMT-0500 (Eastern Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Mar 14 2019 13:35:22 GMT+1100 (AEDT)
 </footer>
 
 <script> prettyPrint(); </script>
