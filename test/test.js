@@ -10,7 +10,7 @@ describe('api helpers', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_simpleStub');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
@@ -68,7 +68,7 @@ describe('batched helper', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubMany');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
@@ -87,7 +87,7 @@ describe('batched helper continued', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubFew');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
@@ -107,7 +107,7 @@ describe('batched helper error handler', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_errorStub');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
@@ -124,7 +124,7 @@ describe('batched paginated helper', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubMany');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
@@ -144,7 +144,7 @@ describe('batched paginated helper continued', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_complexStubFew');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
@@ -165,7 +165,7 @@ describe('batched paginated helper error handler', function () {
 	before(function () {
 		mockery.registerSubstitute(ZN_HTTP_PATH, './test/_errorStub');
 		mockery.enable({ useCleanCache: true });
-		$api = require('../index');
+		$api = require('../index')();
 	});
 
 	after(function () {
