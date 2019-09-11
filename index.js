@@ -12,6 +12,60 @@ function BackendFactory(znHttp) {
 	let self = {};
 
 	/**
+	 * @function attemptLimiter
+	 * @memberof BackendFactory
+	 * @description Makes a limited amount of request attempts in the occurence
+	 * of a stale object version.
+	 *
+	 * @param {Object} request The form id, record id, and updated data.
+	 * @param {Object} options Request options, including the number of attempts.
+	 * @param {number} delay Time between attempts in milliseconds.
+	 *
+	 * @return {Promise<Object>}
+	 */
+	const attemptLimiter = (request, options, delay) => {
+		let attempts = 0;
+
+		delay = delay || 1000;
+
+		options.headers = options.headers || {};
+
+		options.attempts = options.attempts || 3;
+
+		function attempt(delay) {
+
+		  return znHttp.put('/forms/' + request.formId + '/records/' + request.recordId, request.data, options)
+			.catch(err => {
+				attempts++;
+
+				const body = err.getBody();
+				// code 4025 and status 412 are returned for a mismatched ObjectVersion
+				const staleVersion = body.code === 4025 && body.status === 412 && attempts < options.attempts;
+
+				if (staleVersion) {
+
+					return new Promise(resolve => setTimeout(resolve, delay))
+						.then(() => {
+							return self.getRecord(request.formId, request.recordId);
+						})
+						.then(res => {
+							options.headers['X-If-ObjectVersion-Matches'] = res.objectVersion;
+							return attempt(delay);
+						});
+
+				} else {
+
+					return Promise.reject(err);
+
+				}
+		  });
+
+		}
+
+		return attempt(delay);
+	};
+
+	/**
 	 * @function formatResponse
 	 * @memberof BackendFactory
 	 * @description Helper to format API response data.
@@ -85,11 +139,17 @@ function BackendFactory(znHttp) {
 	 * @param {number} formId
 	 * @param {number} recordId
 	 * @param {Object} data Record data.
+	 * @param {Object} options Request options, including the number of attempts.
+	 * @param {number} delay Time between attempts in milliseconds.
 	 *
 	 * @return {Promise<Object>}
 	 */
-	self.updateRecord = (formId, recordId, data) => {
-		return znHttp.put('/forms/' + formId + '/records/' + recordId, data).then(self.formatResponse);
+	self.updateRecord = (formId, recordId, data, options, delay) => {
+		const request = { formId: formId, recordId: recordId, data: data };
+
+		options = options || {};
+
+		return attemptLimiter(request, options, delay).then(self.formatResponse);
 	};
 
 	/**
@@ -127,17 +187,19 @@ function BackendFactory(znHttp) {
 	 * @param {number} formId
 	 * @param {number} recordId
 	 * @param {number} folderId
+	 * @param {Object} options Request options, including the number of attempts.
+	 * @param {number} delay Time between attempts in milliseconds.
 	 *
 	 * @return {Promise<Object>}
 	 */
-	self.moveRecord = (formId, recordId, folderId) => {
+	self.moveRecord = (formId, recordId, folderId, options, delay) => {
 		var data = {
 			id: recordId,
 			folder: {
 				id: folderId
 			}
 		};
-		return self.updateRecord(formId, recordId, data);
+		return self.updateRecord(formId, recordId, data, options, delay);
 	};
 
 	/**
