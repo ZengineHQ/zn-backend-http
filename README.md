@@ -41,8 +41,8 @@ $api.getRecord(formId, recordId).then(record => {
 	// do something with `record`
 });
 
-// Update an existing record
-// data should be a single object
+// Update an existing record.
+// data should be a single object.
 // options should be a single object and can include specific headers and a specific amount of retry attempts.
 // delay should be provided in milliseconds.
 // options and delay are optional.
