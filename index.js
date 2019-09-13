@@ -118,6 +118,20 @@ function BackendFactory(znHttp) {
 	};
 
 	/**
+	 * @function queryRecords
+	 * @memberof BackendFactory
+	 * @description Query records using the provided options.
+	 *
+	 * @param {number} formId
+	 * @param {Object} options Query specifications
+	 *
+	 * @return {Promise<Object>}
+	 */
+	self.queryRecords = (formId, options) => {
+		return znHttp.get('/forms/' + formId + '/records', { params: options }).then(self.formatResponse);
+	};
+
+	/**
 	 * @function createRecord
 	 * @memberof BackendFactory
 	 * @description Creates a new record.

@@ -48,6 +48,10 @@ $api.getRecord(formId, recordId).then(record => {
 // options and delay are optional.
 $api.updateRecord(formId, recordId, data, options, delay);
 
+// Query form records.
+// options should be an object and can include a results limit, sorting options, and a Zengine filter.
+$api.queryRecords = (formId, options);
+
 // Delete an existing record.
 $api.deleteRecord(formId, recordId);
 
