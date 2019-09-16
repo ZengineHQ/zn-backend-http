@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/ZengineHQ/zn-backend-http/compare/3.1.0...3.2.0) (2019-09-16)
+
+
+### Features
+
+* queryRecords method ([619d8be](https://github.com/ZengineHQ/zn-backend-http/commit/619d8be))
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/ZengineHQ/zn-backend-http/compare/3.0.0...3.1.0) (2019-09-13)
 
