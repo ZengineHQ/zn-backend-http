@@ -34,31 +34,31 @@ function BackendFactory(znHttp) {
 
 		function attempt(delay) {
 
-		  return znHttp.put('/forms/' + request.formId + '/records/' + request.recordId, request.data, options)
-			.catch(err => {
-				attempts++;
+			return znHttp.put('/forms/' + request.formId + '/records/' + request.recordId, request.data, options)
+				.catch(err => {
+					attempts++;
 
-				const body = err.getBody();
-				// code 4025 and status 412 are returned for a mismatched ObjectVersion
-				const staleVersion = body.code === 4025 && body.status === 412 && attempts < options.attempts;
+					const body = err.getBody();
+					// code 4025 and status 412 are returned for a mismatched ObjectVersion
+					const staleVersion = body.code === 4025 && body.status === 412 && attempts < options.attempts;
 
-				if (staleVersion) {
+					if (staleVersion) {
 
-					return new Promise(resolve => setTimeout(resolve, delay))
-						.then(() => {
-							return self.getRecord(request.formId, request.recordId);
-						})
-						.then(res => {
-							options.headers['X-If-ObjectVersion-Matches'] = res.objectVersion;
-							return attempt(delay);
-						});
+						return new Promise(resolve => setTimeout(resolve, delay))
+							.then(() => {
+								return self.getRecord(request.formId, request.recordId);
+							})
+							.then(res => {
+								options.headers['X-If-ObjectVersion-Matches'] = res.objectVersion;
+								return attempt(delay);
+							});
 
-				} else {
+					} else {
 
-					return Promise.reject(err);
+						return Promise.reject(err);
 
-				}
-		  });
+					}
+				});
 
 		}
 
