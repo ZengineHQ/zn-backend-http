@@ -9,7 +9,7 @@ const response = {
 		const data = [];
 		const target = counter + 20;
 
-		for (; (counter < target && counter <= totalCount); ++counter) {
+		for (; counter < target && counter <= totalCount; ++counter) {
 			data.push(counter);
 		}
 
