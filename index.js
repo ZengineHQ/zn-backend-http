@@ -1,4 +1,5 @@
 'use strict';
+
 /** @class
 * @param {znHttp} znHttp A ZnHttp reference
 */
