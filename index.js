@@ -1,14 +1,11 @@
 'use strict';
-const fs = require('fs');
 /** @class
 * @param {znHttp} znHttp A ZnHttp reference
 */
 function BackendFactory(znHttp) {
 
 	if (!znHttp) {
-		znHttp = fs.existsSync('../../../lib/zn-http2') ?
-			require('../../../lib/zn-http2')() :
-			require('../../../lib/zn-http')();
+		znHttp = require('../../../lib/zn-http')();
 	}
 
 	let self = {};
